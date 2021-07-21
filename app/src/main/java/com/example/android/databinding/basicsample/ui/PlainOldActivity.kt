@@ -39,23 +39,23 @@ import com.example.android.databinding.basicsample.databinding.PlainActivityBind
  */
 class PlainOldActivity : AppCompatActivity() {
 
-    // Obtain ViewModel from ViewModelProviders
-    private val viewModel by lazy { ViewModelProviders.of(this).get(SimpleViewModel::class.java) }
+    /**
+     * This method is triggered by the `android:onclick` attribute in the layout. It puts business
+     * logic in the activity, which is not ideal. We should do something about that.
+     */
 
+    // Obtain ViewModel from ViewModelProviders
+
+    private val viewModel by lazy { ViewModelProviders.of(this).get(SimpleViewModel::class.java) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val binding: PlainActivityBinding =
             DataBindingUtil.setContentView(this, R.layout.plain_activity)
 
+        binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        updateLikes()
     }
-
-    /**
-     * This method is triggered by the `android:onclick` attribute in the layout. It puts business
-     * logic in the activity, which is not ideal. We should do something about that.
-     */
 
     /**
      * So much findViewById! We'll fix that with Data Binding.
@@ -67,18 +67,7 @@ class PlainOldActivity : AppCompatActivity() {
      * - It has untestable logic
      * - It's updating two views when called even if they're not changing
      */
-    private fun updateLikes() {
-        findViewById<TextView>(R.id.likes).text = viewModel.likes.toString()
-        findViewById<ProgressBar>(R.id.progressBar).progress =
-            (viewModel.likes * 100 / 5).coerceAtMost(100)
-        val image = findViewById<ImageView>(R.id.imageView)
 
-        val color = getAssociatedColor(viewModel.popularity, this)
-
-        ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(color))
-
-        image.setImageDrawable(getDrawablePopularity(viewModel.popularity, this))
-    }
 
     private fun getAssociatedColor(popularity: Popularity, context: Context): Int {
         return when (popularity) {
